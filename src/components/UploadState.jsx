@@ -123,7 +123,7 @@ export default function UploadState({ onNext }) {
         </div>
 
         <h1 className="text-4xl md:text-[3.25rem] font-extrabold tracking-tight text-gray-900 leading-tight mb-5">
-          Format Skripsi/TA mu <br />
+          Format Skripsi/TA <br />
           <span className="text-gradient">dalam hitungan detik</span>
         </h1>
         <p className="text-base text-gray-500 max-w-xl mx-auto leading-relaxed">
