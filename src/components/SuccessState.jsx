@@ -1,52 +1,7 @@
-import { useEffect } from 'react'
 import { Download, RotateCcw, CheckCircle2, Shield, FileCheck } from 'lucide-react'
-import confetti from 'canvas-confetti'
 import { downloadFixedDoc } from '../utils/formatFixer'
 
 export default function SuccessState({ fixResult, scanResult, originalFileName, onReset }) {
-  useEffect(() => {
-    // Fire confetti on mount
-    const duration = 2500
-    const end = Date.now() + duration
-
-    const colors = ['#3B82F6', '#6366F1', '#10b981', '#60A5FA', '#818CF8']
-
-    const frame = () => {
-      confetti({
-        particleCount: 3,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-        colors,
-        zIndex: 9999,
-      })
-      confetti({
-        particleCount: 3,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-        colors,
-        zIndex: 9999,
-      })
-
-      if (Date.now() < end) {
-        requestAnimationFrame(frame)
-      }
-    }
-
-    frame()
-
-    // Big burst
-    setTimeout(() => {
-      confetti({
-        particleCount: 80,
-        spread: 100,
-        origin: { y: 0.6 },
-        colors,
-        zIndex: 9999,
-      })
-    }, 300)
-  }, [])
 
   const handleDownload = () => {
     if (fixResult?.blob) {
