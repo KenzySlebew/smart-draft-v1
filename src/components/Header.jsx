@@ -73,7 +73,7 @@ export default function Header({ currentState, isLight }) {
               }`}
             >
               <BookOpen className="w-3.5 h-3.5" />
-              Guide
+              Pricing
             </a>
             <a
               href="#"
@@ -83,7 +83,7 @@ export default function Header({ currentState, isLight }) {
                   : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.06] border border-white/[0.06]'
               }`}
             >
-              <Github className="w-4 h-4" />
+              {/* <Github className="w-4 h-4" /> */}
             </a>
           </div>
         </nav>
