@@ -29,7 +29,7 @@ export default function SuccessState({ fixResult, scanResult, originalFileName, 
 
       {/* Success Message */}
       <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-        <span className="text-gradient-success">Success!</span> {corrections.length > 0 ? 'All Fixed' : 'No Issues'}
+        <span className="text-emerald-500">Success!</span> {corrections.length > 0 ? 'All Fixed' : 'No Issues'}
       </h2>
       <p className="text-lg text-gray-500 max-w-md mx-auto mb-10 leading-relaxed">
         {corrections.length > 0 ? (
@@ -81,11 +81,11 @@ export default function SuccessState({ fixResult, scanResult, originalFileName, 
             <div className="flex items-center gap-2">
               <div className="w-32 h-2 bg-gray-100 rounded-full overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-cyan-400"
+                  className="h-full rounded-full bg-emerald-500"
                   style={{ width: '100%' }}
                 />
               </div>
-              <span className="text-lg font-bold text-emerald-500">100%</span>
+              <span className="text-lg font-bold text-emerald-500 tabular-nums font-mono">100%</span>
             </div>
           </div>
         </div>

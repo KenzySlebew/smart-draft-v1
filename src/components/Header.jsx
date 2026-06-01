@@ -1,4 +1,4 @@
-import { FileText, Zap, BookOpen, Github } from 'lucide-react'
+import { FileText, BookOpen, Tag} from 'lucide-react'
 
 export default function Header({ currentState, isLight }) {
   const steps = [
@@ -16,8 +16,8 @@ export default function Header({ currentState, isLight }) {
           <div className="flex items-center gap-2.5">
             <div className={`w-9 h-9 rounded-xl flex items-center justify-center shadow-sm ${
               isLight 
-                ? 'bg-gradient-to-br from-blue-500 to-indigo-600' 
-                : 'bg-gradient-to-br from-blue-500 to-indigo-600'
+                ? 'bg-blue-600' 
+                : 'bg-blue-600'
             }`}>
               <FileText className="w-4.5 h-4.5 text-white" strokeWidth={2.5} style={{ width: '18px', height: '18px' }} />
             </div>
@@ -25,7 +25,6 @@ export default function Header({ currentState, isLight }) {
               isLight ? 'text-gray-900' : 'text-white'
             }`}>
               Smart-Draft
-              <Zap className="w-3.5 h-3.5 text-amber-400" fill="currentColor" />
             </h1>
           </div>
 
@@ -72,18 +71,8 @@ export default function Header({ currentState, isLight }) {
                   : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
               }`}
             >
-              <BookOpen className="w-3.5 h-3.5" />
+              <Tag className="w-3.5 h-3.5" />
               Pricing
-            </a>
-            <a
-              href="#"
-              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
-                isLight 
-                  ? 'text-gray-400 hover:text-gray-700 hover:bg-gray-100/60 border border-gray-200/60' 
-                  : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.06] border border-white/[0.06]'
-              }`}
-            >
-              {/* <Github className="w-4 h-4" /> */}
             </a>
           </div>
         </nav>

@@ -1,11 +1,23 @@
 import { useState } from 'react'
-import { AlertTriangle, ChevronRight, Sparkles, FileWarning, CheckCircle2, Loader2 } from 'lucide-react'
+import { AlertTriangle, ChevronRight, FileWarning, CheckCircle2, Loader2, ArrowRight, Wrench } from 'lucide-react'
 import { fixFormatting } from '../utils/formatFixer'
 
-const severityColor = {
-  high: 'bg-red-500/15 text-red-400 border-red-500/20',
-  medium: 'bg-amber-500/15 text-amber-400 border-amber-500/20',
-  low: 'bg-blue-500/15 text-blue-400 border-blue-500/20',
+const severityConfig = {
+  high: { 
+    badge: 'bg-red-500/15 text-red-400 border-red-500/20',
+    icon: 'bg-red-500/10 border-red-500/15',
+    iconColor: 'text-red-400',
+  },
+  medium: { 
+    badge: 'bg-amber-500/15 text-amber-400 border-amber-500/20',
+    icon: 'bg-amber-500/10 border-amber-500/15',
+    iconColor: 'text-amber-400',
+  },
+  low: { 
+    badge: 'bg-blue-500/15 text-blue-400 border-blue-500/20',
+    icon: 'bg-blue-500/10 border-blue-500/15',
+    iconColor: 'text-blue-400',
+  },
 }
 
 export default function ReviewState({ parsedDoc, scanResult, onNext }) {
@@ -28,32 +40,25 @@ export default function ReviewState({ parsedDoc, scanResult, onNext }) {
     }
   }
 
-  const STATS = [
-    { label: 'Est. Pages', value: String(stats.totalPages), color: 'text-gray-300' },
-    { label: 'Issues Found', value: String(stats.issuesFound), color: stats.issuesFound > 0 ? 'text-red-400' : 'text-emerald-400' },
-    { label: 'Categories', value: String(stats.categories), color: 'text-amber-400' },
-    { label: 'Auto-Fixable', value: `${stats.autoFixablePercent}%`, color: 'text-emerald-400' },
-  ]
-
-  // If no issues found
+  // No issues found
   if (issues.length === 0) {
     return (
       <div className="fade-enter w-full max-w-xl mx-auto text-center">
         <div className="flex justify-center mb-8">
-          <div className="w-24 h-24 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-            <CheckCircle2 className="w-12 h-12 text-emerald-400" strokeWidth={2} />
+          <div className="w-20 h-20 rounded-2xl bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center">
+            <CheckCircle2 className="w-10 h-10 text-emerald-400" strokeWidth={1.5} />
           </div>
         </div>
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-          <span className="text-gradient-success">Perfect!</span> No Issues Found
+          No Issues Found
         </h2>
-        <p className="text-lg text-gray-400 max-w-md mx-auto mb-10 leading-relaxed">
-          Your document already meets all Telkom University formatting standards. Great work!
+        <p className="text-base text-gray-400 max-w-md mx-auto mb-10 leading-relaxed">
+          Your document already meets all Telkom University formatting standards.
         </p>
         <div className="glass-dark rounded-xl p-5 max-w-sm mx-auto">
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-400">Compliance Score</span>
-            <span className="text-2xl font-bold text-emerald-400">100%</span>
+            <span className="text-xl font-bold text-emerald-400 tabular-nums font-mono">100%</span>
           </div>
         </div>
         <div className="mt-8">
@@ -68,40 +73,59 @@ export default function ReviewState({ parsedDoc, scanResult, onNext }) {
     )
   }
 
+  const scoreColor = complianceScore >= 80 
+    ? 'text-emerald-400' 
+    : complianceScore >= 50 
+      ? 'text-amber-400' 
+      : 'text-red-400'
+
+  const barColor = complianceScore >= 80
+    ? 'bg-emerald-500'
+    : complianceScore >= 50
+      ? 'bg-amber-500'
+      : 'bg-red-500'
+
   return (
     <div className="fade-enter w-full max-w-3xl mx-auto">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium mb-5">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/15 text-amber-400 text-sm font-medium mb-5">
           <FileWarning className="w-4 h-4" />
           Format Issues Detected
         </div>
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
-          Review Dashboard
+          Review Results
         </h2>
         <p className="text-gray-400 max-w-md mx-auto">
-          We found <span className="text-red-400 font-semibold">{stats.issuesFound} formatting issue{stats.issuesFound !== 1 ? 's' : ''}</span> in your document that don&apos;t match Telkom University standards.
+          Found <span className="text-white font-semibold">{stats.issuesFound}</span> formatting {stats.issuesFound !== 1 ? 'issues' : 'issue'} that don&apos;t match Telkom University standards.
         </p>
       </div>
 
-      {/* Stats Bar */}
+      {/* Compact stats row - no glow effects */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-        {STATS.map((stat, i) => (
-          <div
-            key={i}
-            className="stat-badge glass-dark rounded-xl p-4 text-center"
-          >
-            <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-            <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
-          </div>
-        ))}
+        <div className="glass-dark rounded-xl p-4 text-center">
+          <p className="text-xl font-bold text-gray-300 tabular-nums">{stats.totalPages}</p>
+          <p className="text-xs text-gray-500 mt-1">Est. Pages</p>
+        </div>
+        <div className="glass-dark rounded-xl p-4 text-center">
+          <p className={`text-xl font-bold tabular-nums ${stats.issuesFound > 0 ? 'text-red-400' : 'text-emerald-400'}`}>{stats.issuesFound}</p>
+          <p className="text-xs text-gray-500 mt-1">Issues Found</p>
+        </div>
+        <div className="glass-dark rounded-xl p-4 text-center">
+          <p className="text-xl font-bold text-amber-400 tabular-nums">{stats.categories}</p>
+          <p className="text-xs text-gray-500 mt-1">Categories</p>
+        </div>
+        <div className="glass-dark rounded-xl p-4 text-center">
+          <p className="text-xl font-bold text-emerald-400 tabular-nums">{stats.autoFixablePercent}%</p>
+          <p className="text-xs text-gray-500 mt-1">Auto-Fixable</p>
+        </div>
       </div>
 
-      {/* Error List */}
-      <div className="glass-dark-strong rounded-2xl p-6 md:p-8 mb-8 scan-line">
+      {/* Issue list */}
+      <div className="glass-dark-strong rounded-2xl p-6 md:p-8 mb-8">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="font-semibold text-lg text-gray-200 flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-amber-400" />
+          <h3 className="font-semibold text-base text-gray-200 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-amber-400" />
             Detected Issues
           </h3>
           <span className="text-xs text-gray-600 bg-white/5 px-3 py-1 rounded-full">
@@ -109,67 +133,63 @@ export default function ReviewState({ parsedDoc, scanResult, onNext }) {
           </span>
         </div>
 
-        <div className="space-y-3">
-          {/* Sort by severity: high, medium, low */}
+        <div className="space-y-2.5">
           {[...issues]
             .sort((a, b) => {
               const order = { high: 0, medium: 1, low: 2 }
               return (order[a.severity] || 2) - (order[b.severity] || 2)
             })
-            .map((issue) => (
-            <div
-              key={issue.id}
-              className="error-item group flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.05] hover:border-white/[0.08] transition-all cursor-default"
-            >
-              {/* Icon */}
-              <span className="text-xl shrink-0">{issue.icon}</span>
+            .map((issue) => {
+              const config = severityConfig[issue.severity] || severityConfig.low
+              return (
+                <div
+                  key={issue.id}
+                  className="error-item group flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.05] hover:border-white/[0.08] transition-all cursor-default"
+                >
+                  {/* Severity icon square */}
+                  <div className={`w-9 h-9 rounded-lg ${config.icon} border flex items-center justify-center shrink-0`}>
+                    <AlertTriangle className={`w-4 h-4 ${config.iconColor}`} strokeWidth={2} />
+                  </div>
 
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="text-sm font-semibold text-gray-200">
-                    ❌ {issue.description}
-                  </span>
-                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${severityColor[issue.severity]}`}>
-                    {issue.severity.toUpperCase()}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 text-xs">
-                  <span className="text-emerald-400/80">{issue.expected}</span>
-                  <span className="text-gray-700">•</span>
-                  <span className="text-gray-600">{issue.section}</span>
-                </div>
-              </div>
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <span className="text-sm font-semibold text-gray-200">
+                        {issue.description}
+                      </span>
+                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${config.badge}`}>
+                        {issue.severity.toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="text-emerald-400/80">{issue.expected}</span>
+                      <span className="text-gray-700">-</span>
+                      <span className="text-gray-600 truncate">{issue.section}</span>
+                    </div>
+                  </div>
 
-              {/* Arrow */}
-              <ChevronRight className="w-4 h-4 text-gray-700 group-hover:text-gray-500 transition-colors shrink-0" />
-            </div>
-          ))}
+                  {/* Arrow */}
+                  <ChevronRight className="w-4 h-4 text-gray-700 group-hover:text-gray-500 transition-colors shrink-0" />
+                </div>
+              )
+            })}
         </div>
       </div>
 
-      {/* Compliance Summary */}
+      {/* Compliance bar */}
       <div className="glass-dark rounded-xl p-5 mb-8 flex flex-col md:flex-row items-center gap-4">
-        <div className="flex-1">
-          <p className="text-sm font-medium text-gray-300 mb-1">Compliance Score</p>
+        <div className="flex-1 w-full">
+          <p className="text-sm font-medium text-gray-300 mb-2">Compliance Score</p>
           <div className="flex items-center gap-3">
-            <div className="flex-1 progress-track h-2.5 max-w-xs">
+            <div className="flex-1 progress-track h-2 max-w-xs">
               <div
-                className={`h-full rounded-full ${
-                  complianceScore >= 80
-                    ? 'bg-gradient-to-r from-emerald-500 to-cyan-400'
-                    : complianceScore >= 50
-                      ? 'bg-gradient-to-r from-amber-500 to-amber-400'
-                      : 'bg-gradient-to-r from-red-500 via-amber-500 to-amber-400'
-                }`}
-                style={{ width: `${complianceScore}%` }}
+                className={`h-full rounded-full ${barColor}`}
+                style={{ width: `${complianceScore}%`, transition: 'width 0.6s ease' }}
               />
             </div>
-            <span className={`text-lg font-bold ${
-              complianceScore >= 80 ? 'text-emerald-400' 
-                : complianceScore >= 50 ? 'text-amber-400' 
-                  : 'text-red-400'
-            }`}>{complianceScore}%</span>
+            <span className={`text-lg font-bold tabular-nums font-mono ${scoreColor}`}>
+              {complianceScore}%
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-500">
@@ -180,35 +200,36 @@ export default function ReviewState({ parsedDoc, scanResult, onNext }) {
         </div>
       </div>
 
-      {/* Fix Error */}
+      {/* Fix error */}
       {fixError && (
         <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center">
           {fixError}
         </div>
       )}
 
-      {/* CTA Button */}
+      {/* CTA - solid color, no animated gradient, no Sparkles icon */}
       <div className="text-center">
         <button
-          className="btn-cta text-lg px-10 py-5 rounded-2xl inline-flex items-center gap-3"
+          className="bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-semibold text-base px-8 py-4 rounded-xl inline-flex items-center gap-3 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none shadow-lg shadow-blue-600/20 hover:shadow-blue-500/30"
           onClick={handleAutoFix}
           disabled={isFixing}
           id="auto-fix-btn"
         >
           {isFixing ? (
             <>
-              <Loader2 className="w-6 h-6 animate-spin" />
+              <Loader2 className="w-5 h-5 animate-spin" />
               Fixing Formatting...
             </>
           ) : (
             <>
-              <Sparkles className="w-6 h-6" />
+              <Wrench className="w-5 h-5" />
               Auto-Fix All Formatting
+              <ArrowRight className="w-4 h-4 opacity-60" />
             </>
           )}
         </button>
-        <p className="text-xs text-gray-600 mt-4">
-          Smart-Draft will automatically correct all {stats.issuesFound} formatting issue{stats.issuesFound !== 1 ? 's' : ''}
+        <p className="text-xs text-gray-600 mt-3">
+          Smart-Draft will automatically correct all {stats.issuesFound} formatting {stats.issuesFound !== 1 ? 'issues' : 'issue'}
         </p>
       </div>
     </div>

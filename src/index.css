@@ -308,15 +308,16 @@ body {
 .progress-fill {
   height: 100%;
   border-radius: 9999px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-accent), var(--color-primary-light));
-  background-size: 200% 100%;
-  animation: progress-shimmer 2s ease-in-out infinite;
+  background: linear-gradient(90deg, #2563EB, #3B82F6, #60A5FA, #3B82F6, #2563EB);
+  background-size: 300% 100%;
+  animation: progress-shimmer 3s ease-in-out infinite;
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes progress-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% { background-position: 0% 0; }
+  50% { background-position: 100% 0; }
+  100% { background-position: 0% 0; }
 }
 
 /* ===== Pulse Ring Animation ===== */
@@ -414,7 +415,7 @@ body {
 }
 
 .btn-success {
-  background: linear-gradient(135deg, var(--color-success), #059669);
+  background: #10B981;
   color: white;
   font-weight: 600;
   padding: 1rem 2.5rem;
@@ -424,13 +425,14 @@ body {
   font-family: var(--font-primary);
   font-size: 1.1rem;
   letter-spacing: -0.01em;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);
 }
 
 .btn-success:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.45);
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
 }
 
 .btn-secondary-light {
@@ -474,36 +476,28 @@ body {
 }
 
 .btn-cta {
-  background: linear-gradient(135deg, var(--color-primary), #7c3aed, var(--color-accent));
-  background-size: 200% 100%;
-  animation: gradient-shift 3s ease-in-out infinite;
+  background: #2563EB;
   color: white;
-  font-weight: 700;
-  padding: 1.125rem 3rem;
-  border-radius: 1rem;
+  font-weight: 600;
+  padding: 1rem 2.5rem;
+  border-radius: 0.875rem;
   border: none;
   cursor: pointer;
   font-family: var(--font-primary);
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   letter-spacing: -0.01em;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 6px 24px rgba(59, 130, 246, 0.35);
-  position: relative;
-  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
 }
 
-@keyframes gradient-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+.btn-cta:hover:not(:disabled) {
+  background: #3B82F6;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
 }
 
-.btn-cta:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 12px 40px rgba(59, 130, 246, 0.5);
-}
-
-.btn-cta:active {
-  transform: translateY(-1px) scale(1);
+.btn-cta:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .btn-cta:disabled {
@@ -511,7 +505,6 @@ body {
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
-  animation: none;
 }
 
 /* ===== Error Card Animations ===== */
@@ -536,7 +529,7 @@ body {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-success), var(--color-success-light));
+  background: #10B981;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -590,19 +583,7 @@ body {
 }
 
 /* ===== Utility ===== */
-.text-gradient {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.text-gradient-success {
-  background: linear-gradient(135deg, var(--color-success), var(--color-success-light));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+/* Text gradients removed to prevent AI slop */
 
 /* ===== Custom Scrollbar ===== */
 ::-webkit-scrollbar {
@@ -646,44 +627,17 @@ body {
   border-color: rgba(59, 130, 246, 0.2);
 }
 
-/* ===== Stat Badge Glow ===== */
+/* ===== Stat Badge ===== */
 .stat-badge {
   position: relative;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
-.stat-badge::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: -1;
-  filter: blur(8px);
+.stat-badge:hover {
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
-.stat-badge:hover::before {
-  opacity: 0.3;
-}
-
-/* ===== Pastel Feature Icon Backgrounds ===== */
-.icon-bg-blue {
-  background: linear-gradient(135deg, #DBEAFE, #C7D2FE);
-}
-
-.icon-bg-peach {
-  background: linear-gradient(135deg, #FEE2E2, #FECACA);
-}
-
-.icon-bg-green {
-  background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
-}
-
-.icon-bg-purple {
-  background: linear-gradient(135deg, #EDE9FE, #DDD6FE);
-}
+/* Pastel Feature Icon Backgrounds removed to prevent AI slop */
 
 /* ===== Transition Glow (between light and dark sections) ===== */
 .transition-glow {

@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react'
-import { Upload, FileText, X, AlertCircle, ArrowUp } from 'lucide-react'
+import { Upload, FileText, X, AlertCircle, ArrowRight, Ruler, Type, AlignJustify } from 'lucide-react'
 import { formatFileSize } from '../utils/docxParser'
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
@@ -113,18 +113,15 @@ export default function UploadState({ onNext }) {
       {/* Hero Text */}
       <div className="text-center mb-10">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/70 border border-gray-200/50 shadow-sm mb-6">
-          <span className="text-xs font-semibold bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 mb-6">
+          <span className="text-xs font-semibold text-blue-600">
             Formatting Skripsi/TA otomatis
-          </span>
-          <span className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center">
-            <ArrowUp className="w-3 h-3 text-gray-500 rotate-45" />
           </span>
         </div>
 
         <h1 className="text-4xl md:text-[3.25rem] font-extrabold tracking-tight text-gray-900 leading-tight mb-5">
           Format Skripsi/TA <br />
-          <span className="text-gradient">dalam hitungan detik</span>
+          <span className="text-blue-600">dalam hitungan detik</span>
         </h1>
         <p className="text-base text-gray-500 max-w-xl mx-auto leading-relaxed">
           Upload dokumenmu dan biarkan Smart-Draft mendeteksi serta memperbaiki masalah format secara otomatis berdasarkan standar akademik <span className="text-gray-700 font-medium">Telkom University</span>.
@@ -206,14 +203,14 @@ export default function UploadState({ onNext }) {
             <button
               className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
                 file 
-                  ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40' 
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 hover:bg-blue-500' 
                   : 'bg-gray-100 text-gray-300 cursor-not-allowed'
               }`}
               disabled={!file}
               onClick={handleSubmit}
               id="check-format-btn"
             >
-              <ArrowUp className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -235,26 +232,29 @@ export default function UploadState({ onNext }) {
         </div>
       )}
 
-      {/* Features Bar — Pastel cards */}
+      {/* Features Bar */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-14">
         {[
-          { icon: '📐', title: 'Margin Check', desc: '4-3-3-3 cm standard', bgClass: 'icon-bg-peach' },
-          { icon: '🔤', title: 'Font Validation', desc: 'Times New Roman 12pt', bgClass: 'icon-bg-blue' },
-          { icon: '📏', title: 'Spacing Analysis', desc: '1.5 line spacing', bgClass: 'icon-bg-green' },
-        ].map((feature, i) => (
-          <div
-            key={i}
-            className="feature-card-light rounded-xl p-5 flex items-start gap-4"
-          >
-            <div className={`w-10 h-10 rounded-lg ${feature.bgClass} flex items-center justify-center shrink-0`}>
-              <span className="text-lg">{feature.icon}</span>
+          { Icon: Ruler, title: 'Margin Check', desc: '4-3-3-3 cm standard', bgClass: 'bg-amber-50', iconColor: 'text-amber-500' },
+          { Icon: Type, title: 'Font Validation', desc: 'Times New Roman 12pt', bgClass: 'bg-blue-50', iconColor: 'text-blue-500' },
+          { Icon: AlignJustify, title: 'Spacing Analysis', desc: '1.5 line spacing', bgClass: 'bg-emerald-50', iconColor: 'text-emerald-500' },
+        ].map((feature, i) => {
+          const { Icon } = feature
+          return (
+            <div
+              key={i}
+              className="feature-card-light rounded-xl p-5 flex items-start gap-4"
+            >
+              <div className={`w-10 h-10 rounded-lg ${feature.bgClass} flex items-center justify-center shrink-0`}>
+                <Icon className={`w-5 h-5 ${feature.iconColor}`} />
+              </div>
+              <div>
+                <p className="font-semibold text-sm text-gray-800">{feature.title}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{feature.desc}</p>
+              </div>
             </div>
-            <div>
-              <p className="font-semibold text-sm text-gray-800">{feature.title}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{feature.desc}</p>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
