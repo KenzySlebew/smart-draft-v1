@@ -13,8 +13,7 @@ const STATES = {
   SUCCESS: 3,
 }
 
-// Determine which states use light vs dark theme
-const isLightState = (state) => state === STATES.UPLOAD || state === STATES.SUCCESS
+const isLightState = (state) => true
 
 export default function App() {
   const [appState, setAppState] = useState(STATES.UPLOAD)
@@ -49,7 +48,7 @@ export default function App() {
     setFixResult(null)
   }, [])
 
-  const themeClass = isLightState(appState) ? 'app-light' : 'app-dark'
+  const themeClass = 'app-light'
 
   return (
     <div className={`min-h-screen flex flex-col relative ${themeClass}`}>
@@ -57,11 +56,8 @@ export default function App() {
       <div className="bg-scenic" />
       <div className="bg-scenic-clouds" />
 
-      {/* Dark Background Mesh */}
-      <div className="bg-dark-mesh" />
-
       {/* Header */}
-      <Header currentState={appState} isLight={isLightState(appState)} />
+      <Header currentState={appState} isLight={true} />
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center px-4 py-8 md:py-14 relative z-10">
@@ -92,7 +88,7 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <Footer isLight={isLightState(appState)} />
+      <Footer isLight={true} />
     </div>
   )
 }

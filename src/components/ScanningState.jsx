@@ -107,12 +107,12 @@ export default function ScanningState({ file, onComplete }) {
   if (error) {
     return (
       <div className="fade-enter w-full max-w-xl mx-auto text-center">
-        <div className="glass-dark rounded-2xl p-8">
-          <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-6">
-            <XCircle className="w-8 h-8 text-red-400" strokeWidth={1.5} />
+        <div className="glass-light rounded-2xl p-8">
+          <div className="w-16 h-16 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center mx-auto mb-6">
+            <XCircle className="w-8 h-8 text-red-500" strokeWidth={1.5} />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-3">Scan Failed</h2>
-          <p className="text-gray-400 text-sm mb-6">{error}</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">Scan Failed</h2>
+          <p className="text-gray-600 text-sm mb-6">{error}</p>
           <p className="text-gray-500 text-xs">
             Make sure you are uploading a valid <strong>.docx</strong> file (Microsoft Word format).
             <br />PDF, .doc (old format), and other file types are not supported.
@@ -129,26 +129,26 @@ export default function ScanningState({ file, onComplete }) {
     <div className="fade-enter w-full max-w-xl mx-auto text-center">
       {/* Header icon - clean, no pulse ring */}
       <div className="relative mb-8 flex justify-center">
-        <div className="w-20 h-20 rounded-2xl bg-blue-500/10 border border-blue-500/15 flex items-center justify-center">
-          <CurrentIcon className="w-9 h-9 text-blue-400" strokeWidth={1.5} />
+        <div className="w-20 h-20 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+          <CurrentIcon className="w-9 h-9 text-blue-500" strokeWidth={1.5} />
         </div>
       </div>
 
       {/* Title */}
-      <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
         Analyzing Your Document
       </h2>
       {file?.name && (
-        <p className="text-gray-300 text-sm font-medium mb-1">
+        <p className="text-gray-600 text-sm font-medium mb-1">
           {file.name}
         </p>
       )}
-      <p className="text-gray-600 text-xs mb-8">
+      <p className="text-gray-500 text-xs mb-8">
         Scanning for formatting issues against Telkom University standards
       </p>
 
       {/* Progress card */}
-      <div className="glass-dark rounded-2xl p-8">
+      <div className="glass-light rounded-2xl p-8">
         {/* Progress bar */}
         <div className="progress-track h-2 rounded-full mb-5">
           <div
@@ -158,15 +158,15 @@ export default function ScanningState({ file, onComplete }) {
         </div>
 
         {/* Phase text */}
-        <p className="text-sm font-medium text-gray-300 mb-1">
+        <p className="text-sm font-medium text-gray-600 mb-1">
           {SCAN_PHASES[currentPhase].text}
         </p>
 
         {/* Progress counter - monospace, no gradient */}
-        <p className="text-2xl font-bold text-white tabular-nums font-mono mt-4 mb-1">
+        <p className="text-2xl font-bold text-gray-900 tabular-nums font-mono mt-4 mb-1">
           {progress}%
         </p>
-        <p className="text-xs text-gray-600">
+        <p className="text-xs text-gray-500">
           Step {currentPhase + 1} of {SCAN_PHASES.length}
         </p>
 
@@ -182,12 +182,12 @@ export default function ScanningState({ file, onComplete }) {
               >
                 <div className="shrink-0">
                   {isDone ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" strokeWidth={2} />
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" strokeWidth={2} />
                   ) : (
-                    <Loader2 className="w-4 h-4 text-blue-400 animate-spin" strokeWidth={2} />
+                    <Loader2 className="w-4 h-4 text-blue-500 animate-spin" strokeWidth={2} />
                   )}
                 </div>
-                <span className={isDone ? 'text-gray-500' : 'text-gray-300'}>
+                <span className={isDone ? 'text-gray-400' : 'text-gray-700 font-medium'}>
                   {p.text}
                 </span>
               </div>

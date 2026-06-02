@@ -128,7 +128,6 @@ export default function UploadState({ onNext }) {
         </p>
       </div>
 
-      {/* Dropzone — Webild-style clean white card */}
       <div
         className={`dropzone-light cursor-pointer text-center p-10 md:p-14 ${isDragging ? 'active' : ''} ${file ? 'has-file' : ''} ${error ? 'has-error' : ''}`}
         onDragEnter={handleDragIn}
@@ -188,7 +187,7 @@ export default function UploadState({ onNext }) {
         )}
       </div>
 
-      {/* Enhance prompt style bottom bar */}
+      
       {!file && (
         <div className="dropzone-light mt-[-1px] rounded-t-none px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2 text-gray-400">
