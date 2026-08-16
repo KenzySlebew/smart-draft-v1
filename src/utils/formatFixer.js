@@ -7,18 +7,24 @@
 
 import { W_NS, STANDARDS } from './constants'
 import { saveAs } from 'file-saver'
+import { runSmartPipeline } from './pipeline/smartPipeline'
 
 /**
  * Fix all detected issues in the document and return a downloadable blob
+ * Runs the 4-stage Smart Formatting pipeline + XML property repairs.
+ * 
  * @param {Object} parsedDoc - Output from parseDocx()
  * @param {Array} issues - Issues from checkFormatting()
- * @returns {Object} { blob, fixedIssues }
+ * @returns {Object} { blob, fixedIssues, pipelineResult }
  */
 export async function fixFormatting(parsedDoc, issues) {
   const { zip, documentXml, stylesXml } = parsedDoc
   const fixedIssues = []
 
-  // Apply fixes to document.xml
+  // 1. Run 4-stage Smart Formatting Pipeline (Syntax -> Noise -> Structure -> Layout)
+  const pipelineResult = runSmartPipeline(parsedDoc)
+
+  // 2. Apply XML-level property fixes to document.xml
   if (documentXml) {
     fixMargins(documentXml, issues, fixedIssues)
     fixPaperSize(documentXml, issues, fixedIssues)
@@ -26,13 +32,23 @@ export async function fixFormatting(parsedDoc, issues) {
     fixLineSpacingInDocument(documentXml, issues, fixedIssues)
     fixParagraphSpacingInDocument(documentXml, issues, fixedIssues)
 
+    // Mark smart pipeline issues as fixed
+    const smartIssues = issues.filter(i => i.fixData?.type === 'smartPipeline')
+    for (const issue of smartIssues) {
+      fixedIssues.push({
+        ...issue,
+        fixed: true,
+        fixDescription: `Cleaned & normalized via Smart Pipeline (${issue.category})`,
+      })
+    }
+
     // Serialize document.xml back to string
     const serializer = new XMLSerializer()
     const newDocXml = serializer.serializeToString(documentXml)
     zip.file('word/document.xml', newDocXml)
   }
 
-  // Apply fixes to styles.xml
+  // 3. Apply fixes to styles.xml
   if (stylesXml) {
     fixFontsInStyles(stylesXml, issues, fixedIssues)
     fixLineSpacingInStyles(stylesXml, issues, fixedIssues)
@@ -43,7 +59,7 @@ export async function fixFormatting(parsedDoc, issues) {
     zip.file('word/styles.xml', newStylesXml)
   }
 
-  // Generate the fixed .docx file
+  // 4. Generate the fixed .docx file
   const blob = await zip.generateAsync({
     type: 'blob',
     mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -51,7 +67,7 @@ export async function fixFormatting(parsedDoc, issues) {
     compressionOptions: { level: 6 },
   })
 
-  return { blob, fixedIssues }
+  return { blob, fixedIssues, pipelineResult }
 }
 
 /**

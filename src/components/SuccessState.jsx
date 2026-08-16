@@ -16,10 +16,12 @@ export default function SuccessState({ fixResult, scanResult, originalFileName, 
     category: issue.category,
   })) || []
 
+  const pipelineCounts = fixResult?.pipelineResult?.counts || null
+  const transformationLog = fixResult?.pipelineResult?.transformationLog || []
   const hasBlob = fixResult?.blob != null
 
   return (
-    <div className="fade-enter w-full max-w-xl mx-auto text-center">
+    <div className="fade-enter w-full max-w-2xl mx-auto text-center">
       {/* Success Checkmark */}
       <div className="flex justify-center mb-8">
         <div className="checkmark-circle">
@@ -29,9 +31,9 @@ export default function SuccessState({ fixResult, scanResult, originalFileName, 
 
       {/* Success Message */}
       <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-        <span className="text-emerald-500">Success!</span> {corrections.length > 0 ? 'All Fixed' : 'No Issues'}
+        <span className="text-emerald-500">Success!</span> {corrections.length > 0 ? 'All Formatted & Cleaned' : 'No Issues'}
       </h2>
-      <p className="text-lg text-gray-500 max-w-md mx-auto mb-10 leading-relaxed">
+      <p className="text-lg text-gray-500 max-w-md mx-auto mb-8 leading-relaxed">
         {corrections.length > 0 ? (
           <>
             Your document is now <span className="text-emerald-600 font-semibold">100% formatted</span> to Telkom University academic standards.
@@ -43,6 +45,28 @@ export default function SuccessState({ fixResult, scanResult, originalFileName, 
         )}
       </p>
 
+      {/* Pipeline Summary Cards */}
+      {pipelineCounts && (pipelineCounts.syntax > 0 || pipelineCounts.noise > 0 || pipelineCounts.structure > 0 || pipelineCounts.layout > 0) && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <div className="glass-light rounded-xl p-3 text-center border border-emerald-100">
+            <p className="text-lg font-bold text-emerald-600 tabular-nums">{pipelineCounts.syntax}</p>
+            <p className="text-[11px] text-gray-500 font-medium">Syntax Converted</p>
+          </div>
+          <div className="glass-light rounded-xl p-3 text-center border border-emerald-100">
+            <p className="text-lg font-bold text-emerald-600 tabular-nums">{pipelineCounts.noise}</p>
+            <p className="text-[11px] text-gray-500 font-medium">Noise Cleaned</p>
+          </div>
+          <div className="glass-light rounded-xl p-3 text-center border border-emerald-100">
+            <p className="text-lg font-bold text-emerald-600 tabular-nums">{pipelineCounts.structure}</p>
+            <p className="text-[11px] text-gray-500 font-medium">Structure Normalized</p>
+          </div>
+          <div className="glass-light rounded-xl p-3 text-center border border-emerald-100">
+            <p className="text-lg font-bold text-emerald-600 tabular-nums">{pipelineCounts.layout}</p>
+            <p className="text-[11px] text-gray-500 font-medium">Layout Rules</p>
+          </div>
+        </div>
+      )}
+
       {/* Fixed Summary */}
       {corrections.length > 0 && (
         <div className="glass-light rounded-2xl p-6 md:p-8 mb-10 text-left">
@@ -51,7 +75,7 @@ export default function SuccessState({ fixResult, scanResult, originalFileName, 
             Corrections Applied ({corrections.length})
           </h3>
 
-          <div className="space-y-3 max-h-72 overflow-y-auto">
+          <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
             {corrections.map((fix, i) => (
               <div
                 key={i}

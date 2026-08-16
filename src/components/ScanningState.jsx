@@ -1,16 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
-import { FileSearch, FileCode, Ruler, Type, AlignJustify, BarChart3, FileCheck, XCircle, CheckCircle2, Loader2 } from 'lucide-react'
+import { FileSearch, FileCode, Ruler, Type, AlignJustify, BarChart3, FileCheck, XCircle, CheckCircle2, Loader2, Sparkles, Wand2, BookOpen } from 'lucide-react'
 import { parseDocx } from '../utils/docxParser'
 import { checkFormatting } from '../utils/formatChecker'
 
 const SCAN_PHASES = [
-  { text: 'Extracting document structure', Icon: FileSearch, progress: 10 },
-  { text: 'Parsing XML content', Icon: FileCode, progress: 25 },
-  { text: 'Checking page margins (4-3-3-3)', Icon: Ruler, progress: 40 },
-  { text: 'Validating font styles & sizes', Icon: Type, progress: 55 },
-  { text: 'Analyzing line spacing', Icon: AlignJustify, progress: 70 },
-  { text: 'Checking paragraph formatting', Icon: BarChart3, progress: 85 },
-  { text: 'Generating format report', Icon: FileCheck, progress: 95 },
+  { text: 'Extracting document structure & XML', Icon: FileSearch, progress: 10 },
+  { text: 'Scanning raw markdown syntax (###, **, >)', Icon: Wand2, progress: 25 },
+  { text: 'Detecting noise & visual artifacts (//, -----)', Icon: Sparkles, progress: 40 },
+  { text: 'Analyzing chapter structure & list bullets', Icon: BookOpen, progress: 55 },
+  { text: 'Checking page margins (4-3-3-3 cm)', Icon: Ruler, progress: 70 },
+  { text: 'Validating typography, spacing & indent', Icon: AlignJustify, progress: 85 },
+  { text: 'Generating smart compliance report', Icon: FileCheck, progress: 95 },
 ]
 
 export default function ScanningState({ file, onComplete }) {

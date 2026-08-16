@@ -1,9 +1,19 @@
 /**
  * Format Checker — Compares parsed document against Telkom University standards
- * Returns a list of issues with severity, category, description, and fix metadata
+ * Returns a list of issues with severity, category, description, and fix metadata.
+ *
+ * Extended with Smart Formatting checks:
+ *   - checkMarkdownSyntax: raw markdown markers in text
+ *   - checkNoise: horizontal rules, comments, double spaces
+ *   - checkStructure: inconsistent BAB numbering, mixed bullets
+ *   - checkAlignment: non-justified body paragraphs
+ *   - checkIndentation: missing first-line indent
  */
 
-import { STANDARDS, MARGIN_TOLERANCE, SEVERITY, CATEGORIES, CATEGORY_ICONS, CM_TO_TWIPS } from './constants'
+import {
+  STANDARDS, MARGIN_TOLERANCE, SEVERITY, CATEGORIES, CATEGORY_ICONS,
+  CM_TO_TWIPS, W_NS, BAB_PATTERN, BULLET_LINE_PATTERN, INDENT,
+} from './constants'
 import { twipsToCm, halfPointsToPt } from './docxParser'
 
 /**
@@ -20,10 +30,17 @@ export function checkFormatting(parsedDoc) {
   checkLineSpacing(parsedDoc, issues)
   checkParagraphSpacing(parsedDoc, issues)
 
+  // Smart Formatting checks (new)
+  checkMarkdownSyntax(parsedDoc, issues)
+  checkNoise(parsedDoc, issues)
+  checkStructure(parsedDoc, issues)
+  checkAlignment(parsedDoc, issues)
+  checkIndentation(parsedDoc, issues)
+
   // Calculate stats
   const categories = [...new Set(issues.map(i => i.category))]
   const autoFixable = issues.filter(i => i.autoFixable).length
-  const totalChecks = 5 // margin, paper, font, line-spacing, para-spacing
+  const totalChecks = 10 // margin, paper, font, line-spacing, para-spacing, syntax, noise, structure, alignment, indent
   const passedChecks = totalChecks - categories.length
 
   const complianceScore = issues.length === 0 
@@ -384,4 +401,329 @@ function estimatePageCount(parsedDoc) {
 
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+// ============================================================================
+// SMART FORMATTING CHECKS (Priorities 1-4)
+// ============================================================================
+
+/**
+ * Check for raw markdown syntax in paragraph text.
+ * Detects: # headings, **bold**, *italic*, > blockquotes.
+ *
+ * @param {Object} parsedDoc - Parsed document data
+ * @param {Array} issues - Issues array to push to
+ */
+function checkMarkdownSyntax(parsedDoc, issues) {
+  let headingCount = 0
+  let boldCount = 0
+  let italicCount = 0
+  let blockquoteCount = 0
+
+  for (const para of parsedDoc.paragraphs) {
+    const text = para.text.trim()
+    if (!text) continue
+
+    // Check for heading markers: # at start
+    if (/^#{1,3}\s+/.test(text)) {
+      headingCount++
+    }
+
+    // Check for bold markers: **text**
+    if (/\*{2}.+?\*{2}/.test(text)) {
+      boldCount++
+    }
+
+    // Check for italic markers: *text* (not **)
+    if (/(?<!\*)\*[^*]+?\*(?!\*)/.test(text)) {
+      italicCount++
+    }
+
+    // Check for blockquote markers: > at start
+    if (/^>\s+/.test(text)) {
+      blockquoteCount++
+    }
+  }
+
+  if (headingCount > 0) {
+    issues.push({
+      id: 'syntax-headings',
+      category: CATEGORIES.SYNTAX,
+      icon: CATEGORY_ICONS[CATEGORIES.SYNTAX],
+      description: `${headingCount} paragraph(s) with raw markdown heading markers (#)`,
+      expected: 'Expected: Word Heading styles (Heading 1, 2, 3)',
+      actual: `${headingCount} raw heading(s)`,
+      severity: SEVERITY.HIGH,
+      section: 'Document → Markdown Syntax',
+      autoFixable: true,
+      fixData: { type: 'smartPipeline', stage: 'syntax' },
+    })
+  }
+
+  if (boldCount > 0) {
+    issues.push({
+      id: 'syntax-bold',
+      category: CATEGORIES.SYNTAX,
+      icon: CATEGORY_ICONS[CATEGORIES.SYNTAX],
+      description: `${boldCount} paragraph(s) with raw bold markers (**)`,
+      expected: 'Expected: Native Word bold formatting',
+      actual: `${boldCount} raw bold marker(s)`,
+      severity: SEVERITY.MEDIUM,
+      section: 'Document → Markdown Syntax',
+      autoFixable: true,
+      fixData: { type: 'smartPipeline', stage: 'syntax' },
+    })
+  }
+
+  if (italicCount > 0) {
+    issues.push({
+      id: 'syntax-italic',
+      category: CATEGORIES.SYNTAX,
+      icon: CATEGORY_ICONS[CATEGORIES.SYNTAX],
+      description: `${italicCount} paragraph(s) with raw italic markers (*)`,
+      expected: 'Expected: Native Word italic formatting',
+      actual: `${italicCount} raw italic marker(s)`,
+      severity: SEVERITY.MEDIUM,
+      section: 'Document → Markdown Syntax',
+      autoFixable: true,
+      fixData: { type: 'smartPipeline', stage: 'syntax' },
+    })
+  }
+
+  if (blockquoteCount > 0) {
+    issues.push({
+      id: 'syntax-blockquote',
+      category: CATEGORIES.SYNTAX,
+      icon: CATEGORY_ICONS[CATEGORIES.SYNTAX],
+      description: `${blockquoteCount} paragraph(s) with raw blockquote markers (>)`,
+      expected: 'Expected: Indented citation format (1 cm)',
+      actual: `${blockquoteCount} raw blockquote(s)`,
+      severity: SEVERITY.MEDIUM,
+      section: 'Document → Markdown Syntax',
+      autoFixable: true,
+      fixData: { type: 'smartPipeline', stage: 'syntax' },
+    })
+  }
+}
+
+/**
+ * Check for noise elements: horizontal rules, comments, double spaces.
+ *
+ * @param {Object} parsedDoc - Parsed document data
+ * @param {Array} issues - Issues array to push to
+ */
+function checkNoise(parsedDoc, issues) {
+  let hrCount = 0
+  let commentCount = 0
+  let doubleSpaceCount = 0
+
+  for (const para of parsedDoc.paragraphs) {
+    const text = para.text
+    if (!text) continue
+
+    // Horizontal rules
+    if (/^[\s]*[-=_]{3,}[\s]*$/.test(text)) {
+      hrCount++
+    }
+
+    // Comment lines
+    if (/^\s*\/\//.test(text)) {
+      commentCount++
+    }
+
+    // Double spaces within text
+    if (/[ \t]{2,}/.test(text.trim())) {
+      doubleSpaceCount++
+    }
+  }
+
+  if (hrCount > 0) {
+    issues.push({
+      id: 'noise-horizontal-rules',
+      category: CATEGORIES.NOISE,
+      icon: CATEGORY_ICONS[CATEGORIES.NOISE],
+      description: `${hrCount} horizontal rule line(s) detected (-----)`,
+      expected: 'Expected: No separator lines',
+      actual: `${hrCount} separator(s)`,
+      severity: SEVERITY.MEDIUM,
+      section: 'Document → Noise',
+      autoFixable: true,
+      fixData: { type: 'smartPipeline', stage: 'noise' },
+    })
+  }
+
+  if (commentCount > 0) {
+    issues.push({
+      id: 'noise-comments',
+      category: CATEGORIES.NOISE,
+      icon: CATEGORY_ICONS[CATEGORIES.NOISE],
+      description: `${commentCount} comment line(s) detected (//)`,
+      expected: 'Expected: No code comments in thesis',
+      actual: `${commentCount} comment(s)`,
+      severity: SEVERITY.HIGH,
+      section: 'Document → Noise',
+      autoFixable: true,
+      fixData: { type: 'smartPipeline', stage: 'noise' },
+    })
+  }
+
+  if (doubleSpaceCount > 0) {
+    issues.push({
+      id: 'noise-double-spaces',
+      category: CATEGORIES.NOISE,
+      icon: CATEGORY_ICONS[CATEGORIES.NOISE],
+      description: `${doubleSpaceCount} paragraph(s) with excessive spacing`,
+      expected: 'Expected: Single spaces between words',
+      actual: `${doubleSpaceCount} paragraph(s) with double spaces`,
+      severity: SEVERITY.LOW,
+      section: 'Document → Whitespace',
+      autoFixable: true,
+      fixData: { type: 'smartPipeline', stage: 'noise' },
+    })
+  }
+}
+
+/**
+ * Check for structure issues: inconsistent BAB numbering, mixed bullets.
+ *
+ * @param {Object} parsedDoc - Parsed document data
+ * @param {Array} issues - Issues array to push to
+ */
+function checkStructure(parsedDoc, issues) {
+  let mixedBabCount = 0
+  let mixedBulletCount = 0
+  const bulletTypes = new Set()
+
+  for (const para of parsedDoc.paragraphs) {
+    const text = para.text.trim()
+    if (!text) continue
+
+    // Check BAB headings for inconsistent numbering
+    const babMatch = text.match(BAB_PATTERN)
+    if (babMatch) {
+      const numPart = babMatch[1]
+      // If it's an Arabic number where Roman is expected
+      if (/^\d+$/.test(numPart)) {
+        mixedBabCount++
+      }
+      // If BAB/title is not properly uppercased
+      if (text !== text.toUpperCase() && babMatch[2]) {
+        mixedBabCount++
+      }
+    }
+
+    // Check for mixed bullet types
+    const bulletMatch = text.match(BULLET_LINE_PATTERN)
+    if (bulletMatch) {
+      bulletTypes.add(bulletMatch[1])
+      mixedBulletCount++
+    }
+  }
+
+  if (mixedBabCount > 0) {
+    issues.push({
+      id: 'structure-bab-numbering',
+      category: CATEGORIES.STRUCTURE,
+      icon: CATEGORY_ICONS[CATEGORIES.STRUCTURE],
+      description: `${mixedBabCount} BAB heading(s) with inconsistent format`,
+      expected: 'Expected: "BAB [ROMAN] [UPPERCASE TITLE]"',
+      actual: `${mixedBabCount} inconsistent heading(s)`,
+      severity: SEVERITY.HIGH,
+      section: 'Document → Chapter Structure',
+      autoFixable: true,
+      fixData: { type: 'smartPipeline', stage: 'structure' },
+    })
+  }
+
+  if (bulletTypes.size > 1) {
+    issues.push({
+      id: 'structure-mixed-bullets',
+      category: CATEGORIES.STRUCTURE,
+      icon: CATEGORY_ICONS[CATEGORIES.STRUCTURE],
+      description: `${mixedBulletCount} bullet point(s) using ${bulletTypes.size} different styles (${[...bulletTypes].join(', ')})`,
+      expected: 'Expected: Consistent Word bullet formatting',
+      actual: `${bulletTypes.size} bullet style(s)`,
+      severity: SEVERITY.MEDIUM,
+      section: 'Document → List Formatting',
+      autoFixable: true,
+      fixData: { type: 'smartPipeline', stage: 'structure' },
+    })
+  }
+}
+
+/**
+ * Check for non-justified body paragraphs.
+ *
+ * @param {Object} parsedDoc - Parsed document data
+ * @param {Array} issues - Issues array to push to
+ */
+function checkAlignment(parsedDoc, issues) {
+  let nonJustifiedCount = 0
+
+  for (const para of parsedDoc.paragraphs) {
+    if (!para.text.trim()) continue
+
+    // Skip headings
+    const styleId = para.properties.styleId || ''
+    if (/heading/i.test(styleId)) continue
+
+    const alignment = para.properties.alignment
+    if (alignment && alignment !== 'both' && alignment !== 'justify') {
+      nonJustifiedCount++
+    }
+  }
+
+  if (nonJustifiedCount > 0) {
+    issues.push({
+      id: 'alignment-body',
+      category: CATEGORIES.ALIGNMENT,
+      icon: CATEGORY_ICONS[CATEGORIES.ALIGNMENT],
+      description: `${nonJustifiedCount} body paragraph(s) not justified`,
+      expected: 'Expected: Justify (both) alignment',
+      actual: `${nonJustifiedCount} non-justified paragraph(s)`,
+      severity: SEVERITY.MEDIUM,
+      section: 'Document → Paragraph Alignment',
+      autoFixable: true,
+      fixData: { type: 'smartPipeline', stage: 'layout' },
+    })
+  }
+}
+
+/**
+ * Check for missing first-line indent on body paragraphs.
+ *
+ * @param {Object} parsedDoc - Parsed document data
+ * @param {Array} issues - Issues array to push to
+ */
+function checkIndentation(parsedDoc, issues) {
+  // This is a document-level check — if the Normal style doesn't have
+  // first-line indent, flag it once.
+  let missingIndent = false
+
+  // Check Normal style
+  const normalStyle = parsedDoc.styles['Normal'] || parsedDoc.styles['normal']
+  if (normalStyle) {
+    const pProps = normalStyle.paragraphProperties
+    if (!pProps || !pProps.firstLineIndent) {
+      missingIndent = true
+    }
+  } else {
+    // No Normal style defined — likely missing first-line indent
+    missingIndent = true
+  }
+
+  if (missingIndent) {
+    issues.push({
+      id: 'indent-first-line',
+      category: CATEGORIES.INDENT,
+      icon: CATEGORY_ICONS[CATEGORIES.INDENT],
+      description: 'Body paragraphs missing first-line indent',
+      expected: 'Expected: 1 cm (567 twips) first-line indent',
+      actual: 'No first-line indent',
+      severity: SEVERITY.LOW,
+      section: 'Document → Indentation',
+      autoFixable: true,
+      fixData: { type: 'smartPipeline', stage: 'layout' },
+    })
+  }
 }
