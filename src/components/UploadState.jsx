@@ -18,7 +18,7 @@ export default function UploadState({ onNext }) {
     // Check file type
     const isDocx = f.name.toLowerCase().endsWith('.docx') ||
       f.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    
+
     if (!isDocx) {
       setError('Only .docx files are supported. Please upload a Word document.')
       return false
@@ -187,7 +187,7 @@ export default function UploadState({ onNext }) {
         )}
       </div>
 
-      
+
       {!file && (
         <div className="dropzone-light mt-[-1px] rounded-t-none px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2 text-gray-400">
@@ -200,11 +200,10 @@ export default function UploadState({ onNext }) {
           </div>
           <div className="flex items-center gap-2">
             <button
-              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
-                file 
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 hover:bg-blue-500' 
+              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${file
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 hover:bg-blue-500'
                   : 'bg-gray-100 text-gray-300 cursor-not-allowed'
-              }`}
+                }`}
               disabled={!file}
               onClick={handleSubmit}
               id="check-format-btn"

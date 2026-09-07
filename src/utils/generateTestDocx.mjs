@@ -127,6 +127,20 @@ zip.file('word/document.xml', `<?xml version="1.0" encoding="UTF-8" standalone="
         <w:t xml:space="preserve">Telkom University menerapkan standar formatting yang ketat untuk semua dokumen skripsi. Margin yang digunakan adalah 4cm untuk margin kiri, dan 3cm untuk margin atas, bawah, dan kanan. Font yang digunakan adalah Times New Roman dengan ukuran 12pt dan spasi 1.5.</w:t>
       </w:r>
     </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="276" w:lineRule="auto" w:before="0" w:after="200"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="22"/>
+          <w:szCs w:val="22"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Sistem ini dikembangkan menggunakan framework React dan database PostgreSQL. Model machine learning dan deep learning diterapkan pada cloud computing untuk memproses dataset serta menghasilkan prototype use case diagram.</w:t>
+      </w:r>
+    </w:p>
     <w:sectPr>
       <w:pgSz w:w="11906" w:h="16838"/>
       <w:pgMar w:top="1701" w:right="1701" w:bottom="1701" w:left="1701" w:header="720" w:footer="720"/>

@@ -11,7 +11,7 @@ import { runSmartPipeline } from './pipeline/smartPipeline'
 
 /**
  * Fix all detected issues in the document and return a downloadable blob
- * Runs the 4-stage Smart Formatting pipeline + XML property repairs.
+ * Runs the 5-stage Smart Formatting pipeline + XML property repairs.
  * 
  * @param {Object} parsedDoc - Output from parseDocx()
  * @param {Array} issues - Issues from checkFormatting()
@@ -21,7 +21,7 @@ export async function fixFormatting(parsedDoc, issues) {
   const { zip, documentXml, stylesXml } = parsedDoc
   const fixedIssues = []
 
-  // 1. Run 4-stage Smart Formatting Pipeline (Syntax -> Noise -> Structure -> Layout)
+  // 1. Run 5-stage Smart Formatting Pipeline (Syntax -> Noise -> Structure -> Layout -> Color)
   const pipelineResult = runSmartPipeline(parsedDoc)
 
   // 2. Apply XML-level property fixes to document.xml

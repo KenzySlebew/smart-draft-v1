@@ -236,6 +236,18 @@ function extractRunProperties(rPr) {
     props.italic = val !== '0' && val !== 'false'
   }
 
+  // Color
+  const color = rPr.getElementsByTagNameNS(W_NS, 'color')[0]
+  if (color) {
+    props.color = color.getAttributeNS(W_NS, 'val') || color.getAttribute('w:val') || null
+  }
+
+  // Highlight
+  const highlight = rPr.getElementsByTagNameNS(W_NS, 'highlight')[0]
+  if (highlight) {
+    props.highlight = highlight.getAttributeNS(W_NS, 'val') || highlight.getAttribute('w:val') || null
+  }
+
   return props
 }
 

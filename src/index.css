@@ -106,16 +106,14 @@ body {
   left: 0;
   right: 0;
   height: 60%;
-  background: linear-gradient(
-    180deg,
-    #dce6f8 0%,
-    #e8edfb 15%,
-    #c9d5f0 30%,
-    #b8c8ea 45%,
-    #d3ddf3 60%,
-    #eaf0fb 80%,
-    var(--color-bg-light) 100%
-  );
+  background: linear-gradient(180deg,
+      #dce6f8 0%,
+      #e8edfb 15%,
+      #c9d5f0 30%,
+      #b8c8ea 45%,
+      #d3ddf3 60%,
+      #eaf0fb 80%,
+      var(--color-bg-light) 100%);
 }
 
 .bg-scenic::after {
@@ -125,12 +123,10 @@ body {
   left: 0;
   right: 0;
   height: 50%;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    var(--color-bg-light) 40%,
-    #edf1fa 100%
-  );
+  background: linear-gradient(180deg,
+      transparent 0%,
+      var(--color-bg-light) 40%,
+      #edf1fa 100%);
 }
 
 /* Scenic clouds layer */
@@ -173,9 +169,19 @@ body {
 }
 
 @keyframes cloud-drift {
-  0%, 100% { transform: translateX(0) translateY(0); }
-  33% { transform: translateX(3%) translateY(-2%); }
-  66% { transform: translateX(-2%) translateY(1%); }
+
+  0%,
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+
+  33% {
+    transform: translateX(3%) translateY(-2%);
+  }
+
+  66% {
+    transform: translateX(-2%) translateY(1%);
+  }
 }
 
 /* ===== Dark Background (Scanning/Review) ===== */
@@ -200,12 +206,10 @@ body {
   left: 0;
   right: 0;
   height: 40%;
-  background: linear-gradient(
-    180deg,
-    rgba(59, 130, 246, 0.15) 0%,
-    rgba(59, 130, 246, 0.05) 30%,
-    transparent 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(59, 130, 246, 0.15) 0%,
+      rgba(59, 130, 246, 0.05) 30%,
+      transparent 100%);
 }
 
 .bg-dark-mesh::after {
@@ -315,9 +319,17 @@ body {
 }
 
 @keyframes progress-shimmer {
-  0% { background-position: 0% 0; }
-  50% { background-position: 100% 0; }
-  100% { background-position: 0% 0; }
+  0% {
+    background-position: 0% 0;
+  }
+
+  50% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: 0% 0;
+  }
 }
 
 /* ===== Pulse Ring Animation ===== */
@@ -340,8 +352,15 @@ body {
 }
 
 @keyframes pulse-ring-anim {
-  0% { transform: scale(1); opacity: 0.6; }
-  100% { transform: scale(1.6); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
 }
 
 /* ===== Scan Line Animation ===== */
@@ -362,10 +381,23 @@ body {
 }
 
 @keyframes scan-move {
-  0% { top: 0; opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
 }
 
 /* ===== Buttons ===== */
@@ -390,7 +422,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -514,14 +546,31 @@ body {
   transform: translateX(-20px);
 }
 
-.error-item:nth-child(1) { animation-delay: 0.1s; }
-.error-item:nth-child(2) { animation-delay: 0.25s; }
-.error-item:nth-child(3) { animation-delay: 0.4s; }
-.error-item:nth-child(4) { animation-delay: 0.55s; }
-.error-item:nth-child(5) { animation-delay: 0.7s; }
+.error-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.error-item:nth-child(2) {
+  animation-delay: 0.25s;
+}
+
+.error-item:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.error-item:nth-child(4) {
+  animation-delay: 0.55s;
+}
+
+.error-item:nth-child(5) {
+  animation-delay: 0.7s;
+}
 
 @keyframes slide-in {
-  to { opacity: 1; transform: translateX(0); }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* ===== Success Checkmark ===== */
@@ -538,9 +587,19 @@ body {
 }
 
 @keyframes pop-in {
-  0% { transform: scale(0); opacity: 0; }
-  50% { transform: scale(1.15); }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* ===== Fade Transitions ===== */
@@ -549,8 +608,15 @@ body {
 }
 
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ===== Floating Particles ===== */
@@ -563,10 +629,25 @@ body {
 }
 
 @keyframes particle-float {
-  0% { opacity: 0; transform: translateY(0) scale(0); }
-  20% { opacity: 0.6; transform: translateY(-20px) scale(1); }
-  80% { opacity: 0.3; transform: translateY(-80px) scale(0.8); }
-  100% { opacity: 0; transform: translateY(-120px) scale(0.3); }
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0);
+  }
+
+  20% {
+    opacity: 0.6;
+    transform: translateY(-20px) scale(1);
+  }
+
+  80% {
+    opacity: 0.3;
+    transform: translateY(-80px) scale(0.8);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-120px) scale(0.3);
+  }
 }
 
 /* ===== Typing Cursor ===== */
@@ -578,8 +659,16 @@ body {
 }
 
 @keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 
 /* ===== Utility ===== */
@@ -651,12 +740,10 @@ body {
   left: 0;
   right: 0;
   height: 200px;
-  background: linear-gradient(
-    180deg,
-    rgba(59, 130, 246, 0.15) 0%,
-    rgba(59, 130, 246, 0.05) 40%,
-    transparent 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(59, 130, 246, 0.15) 0%,
+      rgba(59, 130, 246, 0.05) 40%,
+      transparent 100%);
   pointer-events: none;
 }
 

@@ -2,7 +2,6 @@ import { Download, RotateCcw, CheckCircle2, Shield, FileCheck } from 'lucide-rea
 import { downloadFixedDoc } from '../utils/formatFixer'
 
 export default function SuccessState({ fixResult, scanResult, originalFileName, onReset }) {
-
   const handleDownload = () => {
     if (fixResult?.blob) {
       downloadFixedDoc(fixResult.blob, originalFileName || 'document.docx')
@@ -17,7 +16,6 @@ export default function SuccessState({ fixResult, scanResult, originalFileName, 
   })) || []
 
   const pipelineCounts = fixResult?.pipelineResult?.counts || null
-  const transformationLog = fixResult?.pipelineResult?.transformationLog || []
   const hasBlob = fixResult?.blob != null
 
   return (
@@ -40,40 +38,50 @@ export default function SuccessState({ fixResult, scanResult, originalFileName, 
           </>
         ) : (
           <>
-            Your document already meets all Telkom University formatting standards. 
+            Your document already meets all Telkom University formatting standards.
           </>
         )}
       </p>
 
       {/* Pipeline Summary Cards */}
-      {pipelineCounts && (pipelineCounts.syntax > 0 || pipelineCounts.noise > 0 || pipelineCounts.structure > 0 || pipelineCounts.layout > 0) && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+      {pipelineCounts && (pipelineCounts.syntax > 0 || pipelineCounts.noise > 0 || pipelineCounts.structure > 0 || pipelineCounts.layout > 0 || pipelineCounts.color > 0 || pipelineCounts.foreignTerms > 0) && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 mb-6">
           <div className="glass-light rounded-xl p-3 text-center border border-emerald-100">
-            <p className="text-lg font-bold text-emerald-600 tabular-nums">{pipelineCounts.syntax}</p>
-            <p className="text-[11px] text-gray-500 font-medium">Syntax Converted</p>
+            <p className="text-base font-bold text-emerald-600 tabular-nums">{pipelineCounts.syntax}</p>
+            <p className="text-[10px] text-gray-500 font-medium">Syntax Fixed</p>
           </div>
           <div className="glass-light rounded-xl p-3 text-center border border-emerald-100">
-            <p className="text-lg font-bold text-emerald-600 tabular-nums">{pipelineCounts.noise}</p>
-            <p className="text-[11px] text-gray-500 font-medium">Noise Cleaned</p>
+            <p className="text-base font-bold text-emerald-600 tabular-nums">{pipelineCounts.noise}</p>
+            <p className="text-[10px] text-gray-500 font-medium">Noise Cleaned</p>
           </div>
           <div className="glass-light rounded-xl p-3 text-center border border-emerald-100">
-            <p className="text-lg font-bold text-emerald-600 tabular-nums">{pipelineCounts.structure}</p>
-            <p className="text-[11px] text-gray-500 font-medium">Structure Normalized</p>
+            <p className="text-base font-bold text-emerald-600 tabular-nums">{pipelineCounts.structure}</p>
+            <p className="text-[10px] text-gray-500 font-medium">Structure</p>
           </div>
           <div className="glass-light rounded-xl p-3 text-center border border-emerald-100">
-            <p className="text-lg font-bold text-emerald-600 tabular-nums">{pipelineCounts.layout}</p>
-            <p className="text-[11px] text-gray-500 font-medium">Layout Rules</p>
+            <p className="text-base font-bold text-emerald-600 tabular-nums">{pipelineCounts.layout}</p>
+            <p className="text-[10px] text-gray-500 font-medium">Layout Rules</p>
+          </div>
+          <div className="glass-light rounded-xl p-3 text-center border border-emerald-100">
+            <p className="text-base font-bold text-emerald-600 tabular-nums">{pipelineCounts.color || 0}</p>
+            <p className="text-[10px] text-gray-500 font-medium">All-Black Fixed</p>
+          </div>
+          <div className="glass-light rounded-xl p-3 text-center border border-emerald-100 col-span-2 sm:col-span-1">
+            <p className="text-base font-bold text-emerald-600 tabular-nums">{pipelineCounts.foreignTerms || 0}</p>
+            <p className="text-[10px] text-gray-500 font-medium">Italicized Terms</p>
           </div>
         </div>
       )}
 
       {/* Fixed Summary */}
       {corrections.length > 0 && (
-        <div className="glass-light rounded-2xl p-6 md:p-8 mb-10 text-left">
-          <h3 className="font-semibold text-base text-gray-800 flex items-center gap-2 mb-5">
-            <FileCheck className="w-5 h-5 text-emerald-500" />
-            Corrections Applied ({corrections.length})
-          </h3>
+        <div className="glass-light rounded-2xl p-6 md:p-8 mb-8 text-left">
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="font-semibold text-base text-gray-800 flex items-center gap-2">
+              <FileCheck className="w-5 h-5 text-emerald-500" />
+              Corrections Applied ({corrections.length})
+            </h3>
+          </div>
 
           <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
             {corrections.map((fix, i) => (
@@ -133,7 +141,7 @@ export default function SuccessState({ fixResult, scanResult, originalFileName, 
           id="reset-btn"
         >
           <RotateCcw className="w-4 h-4" />
-          Format Another Document
+          Format Another
         </button>
       </div>
     </div>

@@ -15,6 +15,7 @@ import {
   CM_TO_TWIPS, W_NS, BAB_PATTERN, BULLET_LINE_PATTERN, INDENT,
 } from './constants'
 import { twipsToCm, halfPointsToPt } from './docxParser'
+import { FOREIGN_TERMS } from './pipeline/foreignTermsNormalizer'
 
 /**
  * Check all formatting rules against the parsed document
@@ -36,11 +37,13 @@ export function checkFormatting(parsedDoc) {
   checkStructure(parsedDoc, issues)
   checkAlignment(parsedDoc, issues)
   checkIndentation(parsedDoc, issues)
+  checkFontColors(parsedDoc, issues)
+  checkForeignTerms(parsedDoc, issues)
 
   // Calculate stats
   const categories = [...new Set(issues.map(i => i.category))]
   const autoFixable = issues.filter(i => i.autoFixable).length
-  const totalChecks = 10 // margin, paper, font, line-spacing, para-spacing, syntax, noise, structure, alignment, indent
+  const totalChecks = 12 // margin, paper, font, line-spacing, para-spacing, syntax, noise, structure, alignment, indent, color, foreign-terms
   const passedChecks = totalChecks - categories.length
 
   const complianceScore = issues.length === 0 
@@ -724,6 +727,173 @@ function checkIndentation(parsedDoc, issues) {
       section: 'Document → Indentation',
       autoFixable: true,
       fixData: { type: 'smartPipeline', stage: 'layout' },
+    })
+  }
+}
+
+/**
+ * Check for non-black font colors and highlight markers.
+ * Scans the document XML for <w:color> with values other than '000000'/'auto'
+ * and <w:highlight> elements (yellow, green, red revision markers).
+ *
+ * @param {Object} parsedDoc - Parsed document data
+ * @param {Array} issues - Issues array to push to
+ */
+function checkFontColors(parsedDoc, issues) {
+  const { documentXml } = parsedDoc
+  if (!documentXml) return
+
+  let nonBlackCount = 0
+  let highlightCount = 0
+
+  const allRPr = documentXml.getElementsByTagNameNS(
+    'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
+    'rPr'
+  )
+
+  for (let i = 0; i < allRPr.length; i++) {
+    const rPr = allRPr[i]
+
+    // Check font color
+    const color = rPr.getElementsByTagNameNS(
+      'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
+      'color'
+    )[0]
+    if (color) {
+      const val = (color.getAttribute('w:val') || color.getAttributeNS(
+        'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
+        'val'
+      ) || '').toLowerCase()
+      if (val && val !== '000000' && val !== 'auto') {
+        nonBlackCount++
+      }
+    }
+
+    // Check highlight
+    const highlight = rPr.getElementsByTagNameNS(
+      'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
+      'highlight'
+    )[0]
+    if (highlight) {
+      highlightCount++
+    }
+  }
+
+  if (nonBlackCount > 0) {
+    issues.push({
+      id: 'color-non-black',
+      category: CATEGORIES.COLOR,
+      icon: CATEGORY_ICONS[CATEGORIES.COLOR],
+      description: `${nonBlackCount} text run(s) with non-black font color`,
+      expected: 'Expected: All text in black (#000000)',
+      actual: `${nonBlackCount} colored text run(s) (blue, gray, red, etc.)`,
+      severity: SEVERITY.HIGH,
+      section: 'Document → Text Color',
+      autoFixable: true,
+      fixData: { type: 'smartPipeline', stage: 'color' },
+    })
+  }
+
+  if (highlightCount > 0) {
+    issues.push({
+      id: 'color-highlights',
+      category: CATEGORIES.COLOR,
+      icon: CATEGORY_ICONS[CATEGORIES.COLOR],
+      description: `${highlightCount} text highlight marker(s) detected`,
+      expected: 'Expected: No background highlights in final thesis',
+      actual: `${highlightCount} highlighted run(s)`,
+      severity: SEVERITY.MEDIUM,
+      section: 'Document → Text Color',
+      autoFixable: true,
+      fixData: { type: 'smartPipeline', stage: 'color' },
+    })
+  }
+}
+
+/**
+ * Check for un-italicized foreign / English / Latin terms in body paragraphs
+ */
+function checkForeignTerms(parsedDoc, issues) {
+  if (!parsedDoc.paragraphs || parsedDoc.paragraphs.length === 0) return
+
+  // Build regex of terms sorted by length
+  const sorted = [...FOREIGN_TERMS].sort((a, b) => b.length - a.length)
+  const pattern = sorted.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')
+  const regex = new RegExp(`\\b(${pattern})\\b`, 'gi')
+
+  let unitalicizedCount = 0
+  const sampledTerms = new Set()
+  let isInsideEnglishAbstract = false
+
+  for (const para of parsedDoc.paragraphs) {
+    const text = para.text || ''
+    if (!text.trim()) continue
+
+    if (/^ABSTRACT$/i.test(text.trim())) {
+      isInsideEnglishAbstract = true
+      continue
+    }
+    if (/^(ABSTRAK|BAB\s+[IVXLCDM\d]+|PENDAHULUAN|DAFTAR\s+)/i.test(text.trim())) {
+      isInsideEnglishAbstract = false
+    }
+    if (isInsideEnglishAbstract) continue
+
+    // Check if regex matches anything in paragraph text
+    regex.lastIndex = 0
+    if (!regex.test(text)) continue
+
+    // Match each term and check if its run position is italic
+    const charMap = []
+    if (para.runs && para.runs.length > 0) {
+      for (const run of para.runs) {
+        const runText = run.text || ''
+        const isItalic = Boolean(run.properties?.italic)
+        for (let i = 0; i < runText.length; i++) {
+          charMap.push(isItalic)
+        }
+      }
+    }
+
+    regex.lastIndex = 0
+    let match
+    while ((match = regex.exec(text)) !== null) {
+      const start = match.index
+      const end = match.index + match[0].length
+      let hasNonItalic = false
+
+      if (charMap.length >= end) {
+        for (let i = start; i < end; i++) {
+          if (!charMap[i]) {
+            hasNonItalic = true
+            break
+          }
+        }
+      } else {
+        hasNonItalic = true
+      }
+
+      if (hasNonItalic) {
+        unitalicizedCount++
+        if (sampledTerms.size < 5) {
+          sampledTerms.add(match[0])
+        }
+      }
+    }
+  }
+
+  if (unitalicizedCount > 0) {
+    const sampleList = Array.from(sampledTerms).map(t => `"${t}"`).join(', ')
+    issues.push({
+      id: 'foreign-terms-unitalicized',
+      category: CATEGORIES.FOREIGN_TERMS,
+      icon: CATEGORY_ICONS[CATEGORIES.FOREIGN_TERMS],
+      description: `${unitalicizedCount} un-italicized foreign / English term(s) detected`,
+      expected: 'Expected: English and Latin terms in italic (e.g., *framework*, *database*)',
+      actual: `${unitalicizedCount} term(s) in plain text (${sampleList}${unitalicizedCount > 5 ? '...' : ''})`,
+      severity: SEVERITY.MEDIUM,
+      section: 'Document → Academic Style (PUEBI)',
+      autoFixable: true,
+      fixData: { type: 'smartPipeline', stage: 'foreignTerms' },
     })
   }
 }

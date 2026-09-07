@@ -1,4 +1,4 @@
-import { FileText, BookOpen, Tag} from 'lucide-react'
+import { FileText, BookOpen, Tag } from 'lucide-react'
 
 export default function Header({ currentState, isLight }) {
   const steps = [
@@ -26,30 +26,27 @@ export default function Header({ currentState, isLight }) {
           <div className="hidden md:flex items-center gap-1">
             {steps.map((step, i) => (
               <div key={i} className="flex items-center">
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-500 ${
-                  currentState === step.state
+                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-500 ${currentState === step.state
                     ? 'bg-blue-50 text-blue-600 border border-blue-100'
                     : currentState > step.state
                       ? 'text-emerald-600'
                       : 'text-gray-400'
-                }`}>
-                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                    currentState === step.state
+                  }`}>
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${currentState === step.state
                       ? 'bg-blue-600 text-white'
                       : currentState > step.state
                         ? 'bg-emerald-100 text-emerald-600'
                         : 'bg-gray-100 text-gray-400'
-                  }`}>
+                    }`}>
                     {currentState > step.state ? '✓' : i + 1}
                   </span>
                   {step.label}
                 </div>
                 {i < steps.length - 1 && (
-                  <div className={`w-6 h-px mx-1 ${
-                    currentState > step.state 
-                      ? 'bg-emerald-200' 
+                  <div className={`w-6 h-px mx-1 ${currentState > step.state
+                      ? 'bg-emerald-200'
                       : 'bg-gray-200'
-                  }`} />
+                    }`} />
                 )}
               </div>
             ))}

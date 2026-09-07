@@ -32,6 +32,8 @@ export const STANDARDS = {
     size: 12,                          // in pt
     sizeHalfPoints: 12 * PT_TO_HALF_POINTS,  // 24 half-points
     sizeTwips: 12 * PT_TO_TWIPS,       // 240 twips (for w:szCs)
+    color: '000000',                   // Black text color
+    colorTheme: 'auto',               // Theme color fallback
   },
 
   lineSpacing: {
@@ -135,6 +137,8 @@ export const CATEGORIES = {
   NOISE: 'Noise',
   STRUCTURE: 'Structure',
   INDENT: 'Indentation',
+  COLOR: 'Text Color',
+  FOREIGN_TERMS: 'Foreign Terms',
 }
 
 // Category icons
@@ -148,4 +152,6 @@ export const CATEGORY_ICONS = {
   [CATEGORIES.NOISE]: '🧹',
   [CATEGORIES.STRUCTURE]: '🏗️',
   [CATEGORIES.INDENT]: '↦',
+  [CATEGORIES.COLOR]: '🎨',
+  [CATEGORIES.FOREIGN_TERMS]: '🌐',
 }

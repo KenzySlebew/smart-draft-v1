@@ -29,6 +29,8 @@ import { runSyntaxParser } from './syntaxParser'
 import { runNoiseCleaner } from './noiseCleaner'
 import { runStructureNormalizer } from './structureNormalizer'
 import { applyGlobalLayout } from './globalLayout'
+import { runColorNormalizer } from './colorNormalizer'
+import { runForeignTermsNormalizer } from './foreignTermsNormalizer'
 
 /**
  * @typedef {Object} PipelineResult
@@ -36,7 +38,7 @@ import { applyGlobalLayout } from './globalLayout'
  *   Ordered list of all transformations applied across all stages.
  * @property {Array<{stage: string, type: string, detail: string}>} warnings
  *   Non-fatal issues detected but not auto-fixed.
- * @property {{ syntax: number, noise: number, structure: number, layout: number }} counts
+ * @property {{ syntax: number, noise: number, structure: number, layout: number, color: number, foreignTerms: number }} counts
  *   Count of transformations per stage.
  */
 
@@ -44,8 +46,8 @@ import { applyGlobalLayout } from './globalLayout'
  * Run the full smart formatting pipeline on a parsed document.
  *
  * This should be called BEFORE fixFormatting() so that text-level changes
- * (markdown parsing, noise removal) happen before XML property fixes
- * (fonts, margins, spacing).
+ * (markdown parsing, noise removal, foreign terms italicization) happen before
+ * XML property fixes (fonts, margins, spacing).
  *
  * @param {Object} parsedDoc - Output from parseDocx()
  * @returns {PipelineResult} Pipeline results with transformation log
@@ -54,7 +56,7 @@ export function runSmartPipeline(parsedDoc) {
   const { documentXml } = parsedDoc
   const transformationLog = []
   const warnings = []
-  const counts = { syntax: 0, noise: 0, structure: 0, layout: 0 }
+  const counts = { syntax: 0, noise: 0, structure: 0, layout: 0, color: 0, foreignTerms: 0 }
 
   if (!documentXml) {
     return { transformationLog, warnings, counts }
@@ -153,6 +155,46 @@ export function runSmartPipeline(parsedDoc) {
     })
   }
 
+  // ========================================================================
+  // STAGE 5: COLOR NORMALIZER (All-Black Engine)
+  // ========================================================================
+  // STAGE 5: COLOR NORMALIZER (All-Black Engine)
+  // ========================================================================
+  try {
+    const colorResult = runColorNormalizer(documentXml)
+
+    for (const a of colorResult.applied) {
+      transformationLog.push({ stage: 'Color Normalizer', ...a })
+    }
+    counts.color = colorResult.colorFixed + colorResult.highlightRemoved + colorResult.shadingRemoved
+  } catch (err) {
+    console.error('[SmartPipeline] Stage 5 (Color Normalizer) error:', err)
+    warnings.push({
+      stage: 'Color Normalizer',
+      type: 'error',
+      detail: `Stage 5 failed: ${err.message}`,
+    })
+  }
+
+  // ========================================================================
+  // STAGE 6: FOREIGN TERMS NORMALIZER (Auto-Italicize English/Latin Terms)
+  // ========================================================================
+  try {
+    const foreignResult = runForeignTermsNormalizer(documentXml)
+
+    for (const a of foreignResult.applied) {
+      transformationLog.push({ stage: 'Foreign Terms Normalizer', ...a })
+    }
+    counts.foreignTerms = foreignResult.count
+  } catch (err) {
+    console.error('[SmartPipeline] Stage 6 (Foreign Terms Normalizer) error:', err)
+    warnings.push({
+      stage: 'Foreign Terms Normalizer',
+      type: 'error',
+      detail: `Stage 6 failed: ${err.message}`,
+    })
+  }
+
   return { transformationLog, warnings, counts }
 }
 
@@ -176,6 +218,12 @@ export function getPipelineSummary(result) {
   }
   if (result.counts.layout > 0) {
     parts.push(`${result.counts.layout} layout rule(s) applied`)
+  }
+  if (result.counts.color > 0) {
+    parts.push(`${result.counts.color} text color/highlight fixed`)
+  }
+  if (result.counts.foreignTerms > 0) {
+    parts.push(`${result.counts.foreignTerms} foreign term(s) italicized`)
   }
 
   if (parts.length === 0) {

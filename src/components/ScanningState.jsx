@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { FileSearch, FileCode, Ruler, Type, AlignJustify, BarChart3, FileCheck, XCircle, CheckCircle2, Loader2, Sparkles, Wand2, BookOpen } from 'lucide-react'
+import { FileSearch, FileCode, Ruler, Type, AlignJustify, BarChart3, FileCheck, XCircle, CheckCircle2, Loader2, Sparkles, Wand2, BookOpen, Globe } from 'lucide-react'
 import { parseDocx } from '../utils/docxParser'
 import { checkFormatting } from '../utils/formatChecker'
 
@@ -7,9 +7,9 @@ const SCAN_PHASES = [
   { text: 'Extracting document structure & XML', Icon: FileSearch, progress: 10 },
   { text: 'Scanning raw markdown syntax (###, **, >)', Icon: Wand2, progress: 25 },
   { text: 'Detecting noise & visual artifacts (//, -----)', Icon: Sparkles, progress: 40 },
-  { text: 'Analyzing chapter structure & list bullets', Icon: BookOpen, progress: 55 },
-  { text: 'Checking page margins (4-3-3-3 cm)', Icon: Ruler, progress: 70 },
-  { text: 'Validating typography, spacing & indent', Icon: AlignJustify, progress: 85 },
+  { text: 'Auditing foreign/English terms (PUEBI italics)', Icon: Globe, progress: 55 },
+  { text: 'Checking text colors (All-Black) & highlights', Icon: Type, progress: 70 },
+  { text: 'Validating page margins (4-3-3-3 cm) & layout', Icon: Ruler, progress: 85 },
   { text: 'Generating smart compliance report', Icon: FileCheck, progress: 95 },
 ]
 

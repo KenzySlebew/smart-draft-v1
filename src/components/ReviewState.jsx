@@ -3,17 +3,17 @@ import { AlertTriangle, ChevronRight, FileWarning, CheckCircle2, Loader2, ArrowR
 import { fixFormatting } from '../utils/formatFixer'
 
 const severityConfig = {
-  high: { 
+  high: {
     badge: 'bg-red-50 text-red-600 border-red-100',
     icon: 'bg-red-50 border-red-100',
     iconColor: 'text-red-500',
   },
-  medium: { 
+  medium: {
     badge: 'bg-amber-50 text-amber-600 border-amber-100',
     icon: 'bg-amber-50 border-amber-100',
     iconColor: 'text-amber-500',
   },
-  low: { 
+  low: {
     badge: 'bg-blue-50 text-blue-600 border-blue-100',
     icon: 'bg-blue-50 border-blue-100',
     iconColor: 'text-blue-500',
@@ -29,7 +29,7 @@ export default function ReviewState({ parsedDoc, scanResult, onNext }) {
   const handleAutoFix = async () => {
     setIsFixing(true)
     setFixError(null)
-    
+
     try {
       const fixResult = await fixFormatting(parsedDoc, issues)
       onNext(fixResult)
@@ -73,10 +73,10 @@ export default function ReviewState({ parsedDoc, scanResult, onNext }) {
     )
   }
 
-  const scoreColor = complianceScore >= 80 
-    ? 'text-emerald-500' 
-    : complianceScore >= 50 
-      ? 'text-amber-500' 
+  const scoreColor = complianceScore >= 80
+    ? 'text-emerald-500'
+    : complianceScore >= 50
+      ? 'text-amber-500'
       : 'text-red-500'
 
   const barColor = complianceScore >= 80
@@ -128,9 +128,11 @@ export default function ReviewState({ parsedDoc, scanResult, onNext }) {
             <AlertTriangle className="w-4 h-4 text-amber-500" />
             Detected Issues
           </h3>
-          <span className="text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
-            Sorted by severity
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
+              Sorted by severity
+            </span>
+          </div>
         </div>
 
         <div className="space-y-2.5">

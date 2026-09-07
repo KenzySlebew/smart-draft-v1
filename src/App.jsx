@@ -17,7 +17,7 @@ const isLightState = (state) => true
 
 export default function App() {
   const [appState, setAppState] = useState(STATES.UPLOAD)
-  
+
   // Real data state
   const [uploadedFile, setUploadedFile] = useState(null)
   const [parsedDoc, setParsedDoc] = useState(null)
