@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react'
-import { Upload, FileText, X, AlertCircle, ArrowRight, Ruler, Type, AlignJustify } from 'lucide-react'
+import { Upload, FileText, X, AlertCircle, ArrowRight, Ruler, Type, AlignJustify, Globe, Sparkles, ShieldCheck, Palette } from 'lucide-react'
 import { formatFileSize } from '../utils/docxParser'
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
@@ -99,7 +99,7 @@ export default function UploadState({ onNext }) {
   }
 
   return (
-    <div className="fade-enter w-full max-w-2xl mx-auto">
+    <div className="fade-enter w-full max-w-3xl mx-auto">
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -231,24 +231,63 @@ export default function UploadState({ onNext }) {
       )}
 
       {/* Features Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-14">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 mt-10">
         {[
-          { Icon: Ruler, title: 'Margin Check', desc: '4-3-3-3 cm standard', bgClass: 'bg-amber-50', iconColor: 'text-amber-500' },
-          { Icon: Type, title: 'Font Validation', desc: 'Times New Roman 12pt', bgClass: 'bg-blue-50', iconColor: 'text-blue-500' },
-          { Icon: AlignJustify, title: 'Spacing Analysis', desc: '1.5 line spacing', bgClass: 'bg-emerald-50', iconColor: 'text-emerald-500' },
+          {
+            Icon: Ruler,
+            title: 'Margin Check',
+            desc: '4–3–3–3 cm standard',
+            bgClass: 'bg-amber-50',
+            iconColor: 'text-amber-500',
+          },
+          {
+            Icon: Type,
+            title: 'Font Validation',
+            desc: 'Times New Roman 12pt',
+            bgClass: 'bg-blue-50',
+            iconColor: 'text-blue-500',
+          },
+          {
+            Icon: AlignJustify,
+            title: 'Spacing & Indent',
+            desc: '1.5 line & 1 cm indent',
+            bgClass: 'bg-emerald-50',
+            iconColor: 'text-emerald-500',
+          },
+          {
+            Icon: Globe,
+            title: 'PUEBI Auto-Italics',
+            desc: 'English & Latin terms',
+            bgClass: 'bg-indigo-50',
+            iconColor: 'text-indigo-500',
+          },
+          {
+            Icon: Palette,
+            title: 'All-Black Text',
+            desc: 'Pure pitch black print',
+            bgClass: 'bg-slate-100',
+            iconColor: 'text-slate-700',
+          },
+          {
+            Icon: Sparkles,
+            title: 'AI Noise Cleaner',
+            desc: 'Clean markdown & syntax',
+            bgClass: 'bg-purple-50',
+            iconColor: 'text-purple-500',
+          },
         ].map((feature, i) => {
           const { Icon } = feature
           return (
             <div
               key={i}
-              className="feature-card-light rounded-xl p-5 flex items-start gap-4"
+              className="feature-card-light rounded-xl p-4 flex items-start gap-3.5"
             >
-              <div className={`w-10 h-10 rounded-lg ${feature.bgClass} flex items-center justify-center shrink-0`}>
-                <Icon className={`w-5 h-5 ${feature.iconColor}`} />
+              <div className={`w-9 h-9 rounded-lg ${feature.bgClass} flex items-center justify-center shrink-0`}>
+                <Icon className={`w-4.5 h-4.5 ${feature.iconColor}`} />
               </div>
-              <div>
-                <p className="font-semibold text-sm text-gray-800">{feature.title}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{feature.desc}</p>
+              <div className="min-w-0">
+                <p className="font-semibold text-sm text-gray-800 truncate">{feature.title}</p>
+                <p className="text-xs text-gray-400 mt-0.5 truncate">{feature.desc}</p>
               </div>
             </div>
           )
