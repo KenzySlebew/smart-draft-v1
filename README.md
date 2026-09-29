@@ -76,7 +76,7 @@ Smart-Draft saat ini mengacu pada pedoman Telkom University. Dukungan untuk pedo
 
 ## Kredit & Kontribusi
 
-- **Ide & Konsep Awal**: @raiyanabz
-Created by @riftarhman
+Idea by @raiyanabz
+Developed by @riftarhman
 
 
